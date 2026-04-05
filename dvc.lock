@@ -1,0 +1,67 @@
+schema: '2.0'
+stages:
+  merge:
+    cmd: python src/merge.py
+    deps:
+    - path: data/v0
+      hash: md5
+      md5: 4b1d487d9cd24e6288250e9af439d7d2.dir
+      size: 38635328
+      nfiles: 3
+    - path: data/v1
+      hash: md5
+      md5: 9299d9ec5bccabf087035067d9ed8f46.dir
+      size: 54712519
+      nfiles: 4
+    - path: src/merge.py
+      hash: md5
+      md5: 6e02f6b97209e5ae88ebbd0652e89f8a
+      size: 257
+    outs:
+    - path: data/merged
+      hash: md5
+      md5: af2f255598600872e912f20289638b7d.dir
+      size: 93347846
+      nfiles: 6
+  train_v0:
+    cmd: python src/train.py data/v0 models/model_v0.pkl
+    deps:
+    - path: data/v0
+      hash: md5
+      md5: 4b1d487d9cd24e6288250e9af439d7d2.dir
+      size: 38635328
+      nfiles: 3
+    - path: src/features.py
+      hash: md5
+      md5: 047e883076ac451084e09aecf59a0003
+      size: 949
+    - path: src/train.py
+      hash: md5
+      md5: f7506bee3ae2c11255b56dbfdf9236ab
+      size: 1234
+    outs:
+    - path: models/model_v0.pkl
+      hash: md5
+      md5: f629d5b140889d6801e96d705fc47def
+      size: 74133
+  train_v1:
+    cmd: python src/train.py data/merged models/model_v1.pkl
+    deps:
+    - path: data/merged
+      hash: md5
+      md5: af2f255598600872e912f20289638b7d.dir
+      size: 93347846
+      nfiles: 6
+    - path: src/features.py
+      hash: md5
+      md5: 047e883076ac451084e09aecf59a0003
+      size: 949
+    - path: src/train.py
+      hash: md5
+      md5: f7506bee3ae2c11255b56dbfdf9236ab
+      size: 1234
+    outs:
+    - path: models/model_v1.pkl
+      hash: md5
+      md5: 220252b32e1ad15aef65bc852038b0ba
+      size: 75733

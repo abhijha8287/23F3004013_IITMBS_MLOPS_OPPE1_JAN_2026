@@ -1,0 +1,39 @@
+stages:
+
+  merge:
+
+    cmd: python src/merge.py
+
+    deps:
+      - src/merge.py
+      - data/v0
+      - data/v1
+
+    outs:
+      - data/merged
+
+
+  train_v0:
+
+    cmd: python src/train.py data/v0 models/model_v0.pkl
+
+    deps:
+      - src/train.py
+      - src/features.py
+      - data/v0
+
+    outs:
+      - models/model_v0.pkl
+
+
+  train_v1:
+
+    cmd: python src/train.py data/merged models/model_v1.pkl
+
+    deps:
+      - src/train.py
+      - src/features.py
+      - data/merged
+
+    outs:
+      - models/model_v1.pkl
