@@ -26,7 +26,8 @@ jobs:
 
     # 🔥 REAL PIPELINE CHECK
     - name: Run tests
-      run: |
+     run: |
+        export PYTHONPATH=$PYTHONPATH:$(pwd)
         pytest tests/
 
     # Optional but good
