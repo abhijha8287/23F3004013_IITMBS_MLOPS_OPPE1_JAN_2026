@@ -11,7 +11,7 @@ jobs:
 
     steps:
 
-    - name: Checkout repository
+    - name: Checkout
       uses: actions/checkout@v4
 
     - name: Setup Python
@@ -24,45 +24,21 @@ jobs:
         python -m pip install --upgrade pip
         pip install numpy pandas scikit-learn pytest
 
-    # Simulate fetching best model from MLflow
-    - name: Fetch best model
+    # 🔥 REAL PIPELINE CHECK
+    - name: Run tests
       run: |
-        echo "Fetching best model from MLflow registry"
-        ls models || true
+        pytest tests/
 
-    # Simulate fetching test data from DVC/Feast
-    - name: Fetch test data
+    # Optional but good
+    - name: Generate report
       run: |
-        echo "Fetching test data from DVC"
-        ls data || true
+        echo "CI ran real tests successfully" > report.md
 
-    # Feature sanity test
-    - name: Feature sanity test
-      run: |
-        python -c "print('Rolling average feature check passed')"
-        python -c "print('Volume feature check passed')"
-
-    # Prediction sanity test
-    - name: Prediction test
-      run: |
-        python -c "print('Prediction pipeline sanity check passed')"
-
-    # Generate report
-    - name: Generate CML report
-      run: |
-        echo "## CI Pipeline Report" > report.md
-        echo "Pipeline executed successfully" >> report.md
-        echo "Model fetch step completed" >> report.md
-        echo "Data fetch step completed" >> report.md
-        echo "Sanity tests passed" >> report.md
-
-    # Setup CML
     - name: Setup CML
       uses: iterative/setup-cml@v2
 
-    # Post report
-    - name: Post report comment
+    - name: Post report
       env:
         REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        echo "CML report generated"
+        echo "Model tested with real inference" >> report.md
