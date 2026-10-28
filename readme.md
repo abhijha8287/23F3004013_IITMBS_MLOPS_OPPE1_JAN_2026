@@ -1,224 +1,47 @@
-# Stock Movement Prediction MLOps Pipeline
+# Stock Movement Prediction Pipeline (OPPE 1)
 
-## Project Overview
+Predicts whether a stock's price will be higher five minutes later, using minute-level trading data.
 
-This project implements an end-to-end MLOps pipeline to predict stock price movement (up/down) after 5 minutes using minute-level historical trading data.
+## Why this exists
+Submission for OPPE 1 (online proctored exam) of the MLOps course in the IIT Madras BS in Data Science, January 2026 term.
 
-The pipeline demonstrates production-style ML workflow including:
+## What it does
+- Builds two features per stock: 10-minute rolling average close and 10-minute traded volume
+- Labels each row 1 if the price rises after 5 minutes, else 0
+- Trains a random forest on data version v0, then on merged v0 + v1
+- Serves features through a Feast feature store
+- Tracks runs in MLflow and runs tests in GitHub Actions with a CML report
 
-• Data Versioning (DVC)  
-• Feature Store (Feast)  
-• Experiment Tracking (MLflow)  
-• Continuous Integration (GitHub Actions + CML)  
-• Cloud execution on Google Cloud Platform  
-
----
-
-## Problem Statement
-
-Predict whether a stock price will increase or decrease after 5 minutes using:
-
-Features:
-- Rolling average closing price of last 10 minutes
-- Total volume traded in last 10 minutes
-- Stock name
-
-Target:
-- 1 → price increases after 5 minutes
-- 0 → price does not increase
-
----
-
-## Project Structure
-
+## Project structure
 ```
-.
-├── data
-│   ├── v0
-│   ├── v1
-│
-├── src
-│   ├── features.py
-│   ├── merge.py
-│   ├── train.py
-│
-├── feature_repo
-│   └── stock_features
-│
-├── models
-│   ├── model_v0.pkl
-│   ├── model_v1.pkl
-│
-├── .github/workflows
-│   └── ci.yml
-│
-├── dvc.yaml
-├── dvc.lock
-├── requirements.txt
-├── README.md
-└── AI_USAGE_DOC.md
+23F3004013_IITMBS_MLOPS_OPPE1_JAN_2026/
+├── .github/workflows/  CI pipeline and CML report
+├── feature_repo/       Feast feature definitions
+├── src/                Features, merge and training
+├── tests/              Inference test
+├── dvc.yaml            Pipeline stages
+├── AI_USAGE_DOC.md     How AI tools were used
+└── requirements.txt    Python dependencies
 ```
 
----
-
-## Pipeline Architecture
-
-Raw Data (v0 & v1)  
-↓  
-DVC Data Versioning  
-↓  
-Feature Engineering (Feast)  
-↓  
-Model Training (2 iterations)  
-↓  
-MLflow Experiment Tracking  
-↓  
-Model Registry  
-↓  
-CI Pipeline + CML Reports  
-
----
-
-## Technologies Used
-
-Python  
-Scikit-learn  
-DVC  
-Feast  
-MLflow  
-GitHub Actions  
-CML  
-Google Cloud Platform  
-
----
-
-## Setup Instructions
-
-### Clone repository
-
-```
-git clone <repo_url>
+## Getting started
+Requirements: Python 3.10+, DVC, access to the DVC remote on GCS.
+```bash
+git clone https://github.com/abhijha8287/23F3004013_IITMBS_MLOPS_OPPE1_JAN_2026.git
 cd 23F3004013_IITMBS_MLOPS_OPPE1_JAN_2026
-```
-
----
-
-### Install dependencies
-
-```
 pip install -r requirements.txt
+dvc pull         # fetch data/v0 and data/v1
+dvc repro        # merge data, train model_v0 and model_v1
+mlflow ui        # view runs at http://127.0.0.1:5000
 ```
 
----
-
-### Run DVC pipeline
-
-```
-dvc repro
+## Tests
+```bash
+pytest tests/
 ```
 
----
+## Tech stack
+Python, scikit-learn, pandas, DVC, Feast, MLflow, GitHub Actions, CML, Google Cloud Storage
 
-### Push data to remote
-
-```
-dvc push
-```
-
----
-
-### Run MLflow UI
-
-```
-mlflow ui --backend-store-uri file:./mlruns --port 5001
-```
-
----
-
-### Feast Feature Store
-
-Apply feature definitions:
-
-```
-cd feature_repo/stock_features/feature_repo
-feast apply
-```
-
----
-
-## Training Iterations
-
-Iteration 1:  
-Training using v0 dataset  
-
-Iteration 2:  
-Training using merged v0 + v1 datasets  
-
-Models generated:
-
-model_v0.pkl  
-model_v1.pkl  
-
----
-
-## CI Pipeline
-
-GitHub Actions pipeline performs:
-
-• Dependency installation  
-• Pipeline sanity check  
-• CI report generation  
-
-Workflow triggers on push to master branch.
-
----
-
-## Results
-
-The pipeline successfully demonstrates:
-
-• Reproducible ML pipeline  
-• Feature management  
-• Experiment tracking  
-• Model registry  
-• CI automation  
-
----
-
-## Challenges Faced
-
-Some issues encountered:
-
-• DVC remote configuration errors  
-• MLflow tracking mismatch  
-• Feast feature definition issues  
-• CI dependency conflicts  
-
-These were resolved through dependency corrections and configuration fixes.
-
----
-
-## Future Improvements
-
-Possible improvements:
-
-• Hyperparameter optimization  
-• More feature engineering  
-• Model performance comparison  
-• Deployment pipeline  
-
----
-
-## Author
-
-Abhishek Jha  
-Roll Number: 23F3004013  
-IIT Madras BS Degree Program  
-
----
-
-## AI Usage
-
-Details available in:
-
-AI_USAGE_DOC.md
+## Notes
+Data lives in a DVC remote and is not committed. Without remote access, place the raw CSVs in `data/v0` and `data/v1` before running `dvc repro`.
